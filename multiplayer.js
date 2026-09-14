@@ -11,5 +11,5 @@ $('copyRoom').onclick=async()=>{const link=new URL('/',shareBase);link.searchPar
 async function leave(){if(session)try{await api('leave');}catch{}session=null;room=null;raceStart=0;$('createRoom').hidden=false;$('roomSetup').hidden=false;$('roomLobby').hidden=true;$('start').hidden=false;$('netHud').hidden=true;onDisconnect();onLobby();const u=new URL(location.href);u.searchParams.delete('room');history.replaceState(null,'',u);notice('');}
 $('leaveRoom').onclick=leave;
 setInterval(async()=>{if(!session||busy)return;busy=true;try{render(await api('sync',{car:getCar(),state:raceStart?getState():null}));if(Date.now()-lastSuccess<1000&&$('netNotice').textContent.startsWith('Связь'))notice('');}catch(e){notice('Связь прервана: '+e.message);$('netHud').textContent='Нет связи с сервером';if(e.status===401||e.status===404)await leave();}finally{busy=false;}},100);
-return {active:()=>!!session,leave,rematch:async()=>{if(!session)return;try{render(await api('rematch'));}catch(e){$('overlayText').textContent=e.message;}}};
+return {active:()=>!!session,use:async()=>{try{render(await api('use'));}catch(e){notice(e.message);}},leave,rematch:async()=>{if(!session)return;try{render(await api('rematch'));}catch(e){$('overlayText').textContent=e.message;}}};
 }
